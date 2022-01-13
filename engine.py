@@ -29,7 +29,10 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
     optimizer.zero_grad()
 
-    for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, data in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+        samples = data['image']
+        targets = data['label']
+        
         # if data_iter_step > 20:
             # break
         step = data_iter_step // update_freq
@@ -135,8 +138,8 @@ def evaluate(data_loader, model, device, use_amp=False):
     i = 0
     for batch in metric_logger.log_every(data_loader, 10, header):
         i += 1
-        images = batch[0]
-        target = batch[-1]
+        images = batch['image']
+        target = batch['label']
 
         images = images.to(device, non_blocking=True)
         target = target.to(device, non_blocking=True)

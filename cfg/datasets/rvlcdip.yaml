@@ -1,0 +1,58 @@
+basic_args:
+  output_dir: ''
+  seed: 42
+  do_train: True
+  do_eval: True
+  do_test: True
+  
+data_args:
+  dataset_name: rvlcdip
+  dataset_dir: ${ROOT_DIR}netscratch/saifullah/rvl-cdip-wo-tobacco3842/
+  data_caching_args:
+    use_datadings: True
+    cache_resized_images: True
+    cache_image_size: [224, 224]
+    load_data_to_ram: False
+    cached_data_name: resized_224x224
+    dataset_cache_dir: ${NETSCRATCH_DAS}/datasets/
+  data_splitting_args: null
+    # train_val_sampling_strategy: null
+    # random_split_ratio: 0
+    # k_folds: 5
+  data_transforms_args:
+    train_image_rescale_strategy:
+      name: rescale_simple
+      params:
+        rescale_dim: 224
+        rescale_both_dims: True
+    eval_image_rescale_strategy:
+      name: rescale_simple
+      params:
+        rescale_dim: 224
+        rescale_both_dims: True
+    normalize_dataset: True
+    convert_grayscale_to_rgb: True
+    convert_rgb_to_bgr: False
+    use_dataset_normalization_params: False
+    dataset_mean:
+      image: [0.485, 0.456, 0.406]
+    dataset_std:
+      image: [0.229, 0.224, 0.225]
+  data_loader_args:
+    per_device_train_batch_size: 64
+    per_device_eval_batch_size: 64
+    dataloader_drop_last: False
+    shuffle_data: True
+    pin_memory: True
+    dataloader_num_workers: 0
+    # max_train_samples: 100
+    # max_val_samples: 100
+    # max_test_samples: 100
+    # aspect_ratio_grouping_factor: -1
+  data_tokenization_args:
+    tokenize_dataset: False
+    # tokenizer_name: basic_english
+    # tokenizer_lib: torchtext
+    # pad_to_max_length: True
+    # # label_all_tokens: False
+  extras: null

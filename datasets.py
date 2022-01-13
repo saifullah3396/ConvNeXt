@@ -13,6 +13,60 @@ from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
 from timm.data import create_transform
 
+import logging
+import os
+
+import torch
+from das.data.data_args import DataArguments
+from das.data.data_modules.factory import DataModuleFactory
+from das.utils.arg_parser import DASArgumentParser
+from das.utils.basic_args import BasicArguments
+
+def get_tobacco3482():
+    """
+    Parses script arguments.
+    """
+
+    # initialize the argument parsers
+    arg_parser = DASArgumentParser([BasicArguments, DataArguments])
+
+    # parse arguments either based on a json file or directly
+    basic_args, data_args = arg_parser.parse_yaml_file(
+        os.path.abspath('./cfg/datasets/tobacco3482.yaml')
+    )
+
+    # initialize data-handling module
+    datamodule = DataModuleFactory.create_datamodule(
+        basic_args, data_args, collate_fns=None
+    )
+    datamodule.prepare_data()
+    datamodule.setup()
+
+    return datamodule.train_dataset
+
+
+def get_rvlcdip():
+    """
+    Parses script arguments.
+    """
+
+    # initialize the argument parsers
+    arg_parser = DASArgumentParser([BasicArguments, DataArguments])
+
+    # parse arguments either based on a json file or directly
+    basic_args, data_args = arg_parser.parse_yaml_file(
+        os.path.abspath('./cfg/datasets/rvlcdip.yaml')
+    )
+
+    # initialize data-handling module
+    datamodule = DataModuleFactory.create_datamodule(
+        basic_args, data_args, collate_fns=None
+    )
+    datamodule.prepare_data()
+    datamodule.setup()
+
+    return datamodule.train_dataset
+
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
 
@@ -35,6 +89,12 @@ def build_dataset(is_train, args):
         root = os.path.join(args.data_path, 'train' if is_train else 'val')
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 1000
+    elif args.data_set == 'tobacco3482':
+        dataset = get_tobacco3482()
+        nb_classes = 10
+    elif args.data_set == 'rvlcdip':
+        dataset = get_rvlcdip()
+        nb_classes = 16
     elif args.data_set == "image_folder":
         root = args.data_path if is_train else args.eval_data_path
         dataset = datasets.ImageFolder(root, transform=transform)
